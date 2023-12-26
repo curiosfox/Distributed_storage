@@ -12,17 +12,17 @@ class DockerDeployment(object):
                     'command': 'tail -f /dev/null',
                     'networks': ['mynet']
                 },
-                'flask_server': {
-                    'image': 'python:3.8-alpine',
-                    'command': 'sh - c "pip3 install -r requirements.txt && python -m flask run --host=0.0.0.0"',
-                    'ports': ['5000:5000'],
-                    'depends_on': ['network_switch'],
-                    'networks': ['mynet']
-                },
                 'server_node': {
                     'image': 'python:3.8-alpine',
                     'depends_on': ['network_switch'],
-                    'networks': ['mynet']
+                    'environment': {
+                        "PORT": 5555,
+                    },
+                    'entrypoint': "sh -c 'pip3 install -r requirements.txt'",
+                    'command': "sh -c 'python3 server.py'",
+                    'networks': ['mynet'],
+                    'volumes': ['./client.py:/server.py', './requirements.txt:/requirements.txt',
+                                './FileDistribution.py:/FileDistribution.py', './FileOperations.py:/FileOperations.py']
                 }
             },
             'networks': {
@@ -36,9 +36,14 @@ class DockerDeployment(object):
             docker_compose_data['services'][client_name] = {
                 'image': 'python:3.8-alpine',
                 'depends_on': ['network_switch'],
-                'command': 'sh - c "pip3 install -r requirements.txt && python client.py',
                 'networks': ['mynet'],
-                'volumes': ['./client.py:/client.py', './requirements.txt:/requirements.txt']
+                'environment': {
+                    "PORT": f"{5555 + i}"
+                },
+                'entrypoint': "sh -c 'pip3 install -r requirements.txt'",
+                'command': "sh -c 'python3 client.py'",
+                'volumes': ['./client.py:/client.py', './requirements.txt:/requirements.txt',
+                            './FileDistribution.py:/FileDistribution.py', './FileOperations.py:/FileOperations.py']
             }
 
             # Write the generated YAML data to a file

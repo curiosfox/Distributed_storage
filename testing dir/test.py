@@ -1,12 +1,4 @@
-a = [{'client_name': 'Client1',
-      'data': 'EEuflPWxJbyKKVYHxcrlSnCDLsskedNAnZQsIUHFVobHYghbsuwLVTkXOPUjHjulvtNUeJFAXQLZDVEhPhcnDXxHMmNxqJUjCpFMsdfRLOLLLhFdgajBytqpRlYSCxovtdnXiyapzINMirYPLCaMuLwyzprwqixLWdpqlsGUDlgufKXjFbqvyEnazrwlIAayffGCgmfVAdKPbaoEfGEmgZrhNpUlkLcQRctlQAGChKpNobdQqCNTwqgPeDQNTZuS',
-      'fragment_number': 1},
-     {'client_name': 'Client2',
-                              'data': 'BziaDNjHQMEbrvClcWNAcUSnxxegjYaEjyPocTqBmDOuDBqbJMQZEpPKuZaMHaPkLUwSpvOjxSgbAtYesIAAYUpJyEHyXLKkXbRbFyVcZKMCRDByqfCKoTwclcgrODweEkUErfAljYeXhNpisxXVQOyZEaMmAkFRmbcqdeNzwvyNDxQXZRQZlNqsevpYtviaCuwIMyWAWzaoezZbJEVZQWtMtlIbaCaDEejWLZsqiOKdHQoFpgzHSOuZgWlFZdsR',
-                              'fragment_number': 2},
-     {'client_name': 'Client3',
-                                                      'data': 'nuxxeZXpiohSqHoGJzFJRatYGkDzVXwiiVwXQpHGOQTCFnDTnPugzQQuRQtxEXndlwZpRKutnkTKJNEkrSCoqaOXUBRUbLXxToQBjAcENbdMwazONhsJPHQYSaUSEWMLeQQwpVzQTZXMacqurHkIEEUAJwRjBYlZTRsSeMIspjSEFECGynfbgzkOANhIzguyEIGREtdvTTZVWQTPLPRuPrvvcORQstmgIHlPohOXnBNGmulunbwamvTtMGVVZoHt',
-                                                      'fragment_number': 3},
-     {'client_name': 'Client3',
-                                                                              'data': 'ZKlmUrOFmJXvfEdEYMRnHbafYdUgALaYMssdMJWqpKGAWLVoJuLpGMyaWyVpqDfYjnKNQhKqcfVTLFZqhjrQMqdWimbsOMDnyhRYJRfdvyUFpxPFULxnhNCEkeaBlRhmVwfHfcIwMZvaytoRjLpXMueDakGByPOdJIjVoxCqDOlFFjQxqiiWSjyvcyeJnOjCCRIuXFUcEqQSZMaCyWdRFxFGFAJKczARrsYsFhRJUDtTKqyxkMDcHqzinvtdEYAe',
-                                                                              'fragment_number': 4}]
+from docker_deploy import DockerDeployment
+if __name__ == "__main__":
+    docker_deploy = DockerDeployment()
+    docker_deploy.generate_yml_file(nodes=4)
