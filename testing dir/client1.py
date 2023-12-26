@@ -16,7 +16,7 @@ def client(port, message):
         rec_json = socket.recv_json()
         print(rec_json)
         if rec_json["identity"] == client_name:
-            print(f"Received operation:{rec_json['operation']}\n Data:{rec_json['data']}")
+            print(f"Received operation:{rec_json['operation']}")
             if rec_json['operation'] == "store":
                 with open(f"{rec_json['file_name']}_fragment{rec_json['fragment']}", "w") as file:
                     file.write(rec_json["data"])

@@ -1,3 +1,6 @@
+import random
+
+
 class FileDistribution:
     def __init__(self, num_nodes):
         self.clients = [f'client{i}' for i in range(1, num_nodes + 1)]
