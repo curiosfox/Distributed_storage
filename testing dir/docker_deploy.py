@@ -2,7 +2,9 @@ import yaml
 
 
 class DockerDeployment(object):
-    def generate_yml_file(self, nodes=4):
+    @staticmethod
+    def generate_yml_file(nodes=4):
+        docker_yaml_file = 'docker-compose.yml'
         docker_compose_data = {
             'version': '3.7',
             'services': {
@@ -39,3 +41,4 @@ class DockerDeployment(object):
             # Write the generated YAML data to a file
             with open('docker-compose.yml', 'w') as yaml_file:
                 yaml.dump(docker_compose_data, yaml_file, default_flow_style=False)
+        return docker_yaml_file
