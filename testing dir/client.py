@@ -1,14 +1,15 @@
 import os
-
+import logging
 import zmq
 
 
 def client(port, message):
+    logging.basicConfig(level=logging.DEBUG)
     client_name = "client1"
     context = zmq.Context()
     socket = context.socket(zmq.DEALER)
     socket.connect(f"tcp://192.168.1.2:{port}")
-    print(f"running on port :{port}")
+    logging.info(f"running on port :{port}")
     data_str = {
         "identity": client_name,
         "data": message
@@ -17,9 +18,9 @@ def client(port, message):
     while True:
         # Receive response from server
         rec_json = socket.recv_json()
-        print(rec_json)
+        logging.info(rec_json)
         if rec_json["identity"] == client_name:
-            print(f"Received operation:{rec_json['operation']}")
+            logging.info(f"Received operation:{rec_json['operation']}")
             if rec_json['operation'] == "store":
                 with open(f"{rec_json['file_name']}_fragment{rec_json['fragment']}", "w") as file:
                     file.write(rec_json["data"])
