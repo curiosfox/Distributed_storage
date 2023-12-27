@@ -7,7 +7,7 @@ def client(port, message):
     client_name = "client1"
     context = zmq.Context()
     socket = context.socket(zmq.DEALER)
-    socket.connect(f"tcp://mynet:{port}")
+    socket.connect(f"tcp://192.168.1.2:{port}")
     print(f"running on port :{port}")
     data_str = {
         "identity": client_name,

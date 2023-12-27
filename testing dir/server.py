@@ -12,7 +12,7 @@ def server(port, nodes=4):
     socket_list = list()
     for node in range(nodes):
         socket = context.socket(zmq.DEALER)
-        socket.bind(f"tcp://mynet:{port + node}")
+        socket.bind(f"tcp://*:{port + node}")
         socket_list.append(socket)
         print(f"Server listening on port {port + node}")
     ledger = dict()
