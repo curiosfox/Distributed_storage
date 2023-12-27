@@ -15,7 +15,7 @@ class Server(object):
         self.port = 5555 if kwargs.get('port') is None else kwargs.get('port')
         self.nodes = 4 if kwargs.get('nodes') is None else kwargs.get('nodes')
         self.file_size = 1024 if kwargs.get('file_size') is None else kwargs.get('file_size')
-        self.throttle_bandwidth = 0 if kwargs.get('throttle') is None else kwargs.get('throttle')
+        self.throttle_bandwidth = 5000 if kwargs.get('throttle') is None else kwargs.get('throttle')
         self.fragments = 4 if kwargs.get('fragments') is None else kwargs.get('fragments')
         self.operation = "random" if kwargs.get('operation') is None else kwargs.get('operation')
         self.repeat = 1 if kwargs.get('repeat') is None else kwargs.get('repeat')
