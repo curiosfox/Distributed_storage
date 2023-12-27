@@ -11,16 +11,15 @@ import sys
 
 
 class Server(object):
-    def __init__(self, port=5555, nodes=4, file_size=1024, throttle=0, fragments=4, operation="random",
-                 repeat=1, **kwargs):
+    def __init__(self, **kwargs):
         self.ledger = None
-        self.port = kwargs.get('port', 5555)
-        self.nodes = kwargs.get('nodes', 4)
-        self.file_size = kwargs.get('file_size', 1024)
-        self.throttle_bandwidth = kwargs.get('throttle', 0)
-        self.fragments = kwargs.get('fragments', 4)
-        self.operation = kwargs.get('operation', "random")
-        self.repeat = kwargs.get('repeat', 1)
+        self.port = 5555 if kwargs.get('port') is None else kwargs.get('port')
+        self.nodes = 4 if kwargs.get('nodes') is None else kwargs.get('nodes')
+        self.file_size = 1024 if kwargs.get('file_size') is None else kwargs.get('file_size')
+        self.throttle_bandwidth = 0 if kwargs.get('throttle') is None else kwargs.get('throttle')
+        self.fragments = 4 if kwargs.get('fragments') is None else kwargs.get('fragments')
+        self.operation = "random" if kwargs.get('operation') is None else kwargs.get('operation')
+        self.repeat = 1 if kwargs.get('repeat') is None else kwargs.get('repeat')
         logging.basicConfig(level=logging.DEBUG)
 
     def start_server(self):
@@ -36,7 +35,6 @@ class Server(object):
     def deploy_client_nodes(self):
         docker_deployment = DockerDeployment()
         yaml_file = docker_deployment.generate_yml_file(nodes=self.nodes)
-        client = docker.from_env()
         try:
             # Build and start Docker Compose services
             subprocess.run(['docker-compose', '-f', yaml_file, 'up', '-d'], check=True)
@@ -106,6 +104,17 @@ class Server(object):
         data = self.fileops.combine_fragments(fragaments)
         return self.fileops.compare_files(self.fileops.read_file(file_name), data)
 
+    @staticmethod
+    def cleanup(socket_list):
+        try:
+            # Run Docker Compose down using subprocess
+            subprocess.run(['docker-compose', 'down'], check=True)
+            print("Docker Compose cleanup successful.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error during Docker Compose cleanup: {e}")
+        for socket in socket_list:
+            socket.close()
+
     def task1_single_process(self, file_name="testing.txt"):
         socket_list = self.start_server()
         self.deploy_client_nodes()
@@ -113,7 +122,9 @@ class Server(object):
         placements = self.get_placement(connected_clients, file_name=file_name)
         self.store_file_in_clients(connected_clients, placements, file_name)
         fragments = self.load_file_from_clients(connected_clients, file_name)
-        logging.info(self.validate_file(fragments, file_name))
+        if logging.info(self.validate_file(fragments, file_name)):
+            logging.info(f"All data validated and is true")
+        self.cleanup(socket_list)
 
 
 def server(port, nodes=4):
