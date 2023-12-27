@@ -1,10 +1,6 @@
 networks:
   mynet:
     driver: bridge
-    ipam:
-      config:
-      - gateway: 192.168.0.1
-        subnet: 192.168.0.0/24
 services:
   client_node_0:
     command: sh -c 'pip3 install -r requirements.txt && python3 client.py'
@@ -13,8 +9,10 @@ services:
     environment:
       PORT: '5555'
     image: python:3.8-alpine
-    networks:
-    - mynet
+    networks: !!set
+      mynet: null
+    ports:
+    - 5555:5555
     volumes:
     - ./client.py:/client.py
     - ./requirements.txt:/requirements.txt
@@ -27,8 +25,10 @@ services:
     environment:
       PORT: '5556'
     image: python:3.8-alpine
-    networks:
-    - mynet
+    networks: !!set
+      mynet: null
+    ports:
+    - 5556:5556
     volumes:
     - ./client.py:/client.py
     - ./requirements.txt:/requirements.txt
@@ -41,8 +41,10 @@ services:
     environment:
       PORT: '5557'
     image: python:3.8-alpine
-    networks:
-    - mynet
+    networks: !!set
+      mynet: null
+    ports:
+    - 5557:5557
     volumes:
     - ./client.py:/client.py
     - ./requirements.txt:/requirements.txt
@@ -55,8 +57,10 @@ services:
     environment:
       PORT: '5558'
     image: python:3.8-alpine
-    networks:
-    - mynet
+    networks: !!set
+      mynet: null
+    ports:
+    - 5558:5558
     volumes:
     - ./client.py:/client.py
     - ./requirements.txt:/requirements.txt
@@ -67,19 +71,4 @@ services:
     image: alpine
     networks:
     - mynet
-  server_node:
-    command: sh -c 'pip3 install -r requirements.txt && python3 server.py'
-    depends_on:
-    - network_switch
-    environment:
-      PORT: 5555
-    image: python:3.8-alpine
-    networks:
-      mynet:
-        ipv4_address: 192.168.0.3
-    volumes:
-    - ./client.py:/server.py
-    - ./requirements.txt:/requirements.txt
-    - ./FileDistribution.py:/FileDistribution.py
-    - ./FileOperations.py:/FileOperations.py
 version: '3.7'

@@ -5,10 +5,10 @@ import zmq
 
 def client(port, message):
     logging.basicConfig(level=logging.DEBUG)
-    client_name = "client1"
+    client_name = f"client{int(port) - 5554}"
     context = zmq.Context()
     socket = context.socket(zmq.DEALER)
-    socket.connect(f"tcp://192.168.1.2:{port}")
+    socket.connect(f"tcp://host.docker.internal:{port}")
     logging.info(f"running on port :{port}")
     data_str = {
         "identity": client_name,

@@ -17,12 +17,11 @@ def server(port, nodes=4):
     file_name = "testing.txt"
     connected_clients = dict()
     for socket_cli in socket_list:
+        logging.info(f"Trying on the socker{socket_cli}")
         rec_json = socket_cli.recv_json()
         identity = rec_json["identity"]
-        # Check if client is already connected
-        if identity not in connected_clients:
-            connected_clients[identity] = socket_cli
-            logging.info("Client connected:", identity)
+        connected_clients[identity] = socket_cli
+        logging.info(f"Client connected:{identity}")
     logging.info("All clients connected")
     fileops = FileOps(1024)
     file_dist = FileDistribution(len(connected_clients))
