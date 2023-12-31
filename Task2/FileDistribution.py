@@ -1,6 +1,5 @@
 import random
 
-
 class FileDistribution:
     def __init__(self, num_nodes):
         self.clients = [f'client{i}' for i in range(1, num_nodes + 1)]
@@ -26,19 +25,10 @@ class FileDistribution:
         return placements
 
     def buddy_approach_placement(self, fragments, replicas=1):
-        clients = self.clients
-        if len(clients) % 2 != 0:
-            removed_client = clients.pop()
-
-        pairs = [(clients[i], clients[i + 1]) for i in range(0, len(clients), 2)]
-
+        pairs = [(self.clients[i], self.clients[i + 1]) for i in range(0, len(self.clients), 2)]
         placements = [
             {"client_name": random.choice(buddy_pair), "data": fragment, "fragment": i + 1, "replica": j + 1}
             for i, (buddy_pair, fragment) in enumerate(zip(pairs, fragments))
             for j in range(replicas)
         ]
-
-        if len(clients) % 2 != 0:
-            clients.append(removed_client)
-
         return placements

@@ -1,20 +1,21 @@
 import argparse
 import subprocess
-import time
 from copy import deepcopy
 
 import zmq
 import logging
 
-from FileOperations import FileOps
-from FileDistribution import FileDistribution
-from docker_deploy import DockerDeployment
+from Distributed_storage.Task2.DockerSwarmManager import DockerSwarmManager
+from Distributed_storage.Task2.FileOperations import FileOps
+from Distributed_storage.Task2.FileDistribution import FileDistribution
+from Distributed_storage.Task2.docker_deploy import DockerDeployment
 
 
 class Server(object):
     def __init__(self, **kwargs):
         self.fileops = None
-        self.ledger = None
+        self.ledger = dict()
+        self.docker = DockerSwarmManager()
         self.port = 5555 if kwargs.get('port') is None else kwargs.get('port')
         self.nodes = 4 if kwargs.get('nodes') is None else kwargs.get('nodes')
         self.replicas = 3 if kwargs.get('replicas') is None else kwargs.get('replicas')
@@ -32,7 +33,7 @@ class Server(object):
             socket = context.socket(zmq.DEALER)
             socket.bind(f"tcp://*:{self.port + node}")
             socket_list.append(socket)
-            socket.setsockopt(zmq.RATE, int(self.file_size / 10000))  # 5Mb Rate
+            socket.setsockopt(zmq.RATE, 5 * 1000)  # 5Mb Rate
             logging.info(f"Server listening on port {self.port + node}")
         return socket_list
 
@@ -70,7 +71,6 @@ class Server(object):
         return operation_dict[self.operation](fragments, replicas=self.replicas)
 
     def store_file_in_clients(self, connected_clients, placements, file_name):
-        self.ledger = dict()
         self.ledger[file_name] = list()
         for placement in placements:
             self.ledger[file_name].append({
@@ -121,7 +121,49 @@ class Server(object):
         return self.fileops.compare_files(self.fileops.read_file(file_name), data)
 
     @staticmethod
-    def cleanup(socket_list):
+    def heartbeat_collection(connected_clients):
+        failed_heartbeat = list()
+        for client_name, socket in connected_clients.items():
+            logging.info(f"Checking for heartbeat in client :{client_name}")
+            heartbeat_json = {
+                'identity': client_name,
+                'operation': 'heartbeat'
+            }
+            try:
+                socket.send_json(heartbeat_json, flags=zmq.NOBLOCK)
+                if socket.poll(2000, zmq.POLLIN):
+                    logging.info("got message ", socket.recv_json(zmq.NOBLOCK))
+                else:
+                    logging.error("error: message timeout")
+            except Exception as ex:
+                logging.error(f"Obtained error on heartbeat request for client:{client_name}")
+                failed_heartbeat.append(client_name)
+        return failed_heartbeat
+
+    def check_damage(self, failed_clients):
+        damaged_files = list()
+        fragment_lost = 0
+        for file_name, file_ledger in self.ledger.items():
+            refined_frag_list = list()
+            for file_entry in file_ledger:
+                if file_entry["client_name"] in failed_clients:
+                    fragment_lost += 1
+                else:
+                    refined_frag_list.append(file_entry)
+            # check if the files are intact
+            fragment_checklist = [1, 2, 3, 4]
+            for remain_filefrag in refined_frag_list:
+                if remain_filefrag["fragment"] in fragment_checklist:
+                    fragment_checklist.remove(remain_filefrag["fragment"])
+            if len(fragment_checklist) != 0:
+                damaged_files.append(file_name)
+        return {
+            "damaged files": damaged_files,
+            "number of damaged_files": len(damaged_files),
+            "number of fragments lost": fragment_lost
+        }
+
+    def cleanup(self, socket_list, directory_path):
         try:
             # Run Docker Compose down using subprocess
             subprocess.run(['docker-compose', 'down'], check=True)
@@ -130,38 +172,40 @@ class Server(object):
             logging.info(f"Error during Docker Compose cleanup: {e}")
         for socket in socket_list:
             socket.close()
+        self.fileops.remove_directory(directory_path)
 
-    def task1_single_process(self, file_name="testing.txt"):
-        measurement_json = {
-            'number_of_nodes': self.nodes,
-            'file_size': self.file_size,
-            'bandwidth': self.throttle_bandwidth,
-            'operation': self.operation
-        }
-        download_time = list()
-        upload_time = list()
+    def task2_single_process(self):
+        file_dir_name = "file_dir"
+        result_json = dict()
         socket_list = self.start_server()
         self.deploy_client_nodes()
         connected_clients = self.connect_all_clients(socket_list)
-        for i in range(self.repeat):
-            placements = self.get_placement(connected_clients, file_name=file_name)
-            upload_start = time.time()
-            self.store_file_in_clients(connected_clients, placements, file_name)
-            upload_end = time.time()
-            download_start = time.time()
-            fragments = self.load_file_from_clients(connected_clients, file_name)
-            download_end = time.time()
-            if self.validate_file(fragments, file_name):
-                logging.info(f"All data validated and is true")
-            else:
-                logging.error(f"Files are not recovered properly")
-            upload_time.append(upload_end - upload_start)
-            download_time.append(download_end - download_start)
-        self.cleanup(socket_list)
-        measurement_json['download_time'] = download_time
-        measurement_json['upload_time'] = upload_time
+        file_list = FileOps.generate_files("file_dir", 100 * 1024)  # 100kb files
+        for file in file_list:
+            placements = self.get_placement(connected_clients, file_name=file)
+            self.store_file_in_clients(connected_clients, placements, file)
+        self.docker.random_kill_containers(num_containers_to_kill=2)
+        failed_heartbeat = self.heartbeat_collection(connected_clients)
+        result_json["2"] = self.check_damage(failed_heartbeat)
+        self.docker.random_kill_containers(num_containers_to_kill=1)  # 3
+        failed_heartbeat = self.heartbeat_collection(connected_clients)
+        result_json["3"] = self.check_damage(failed_heartbeat)
+        self.docker.random_kill_containers(num_containers_to_kill=1)  # 4
+        failed_heartbeat = self.heartbeat_collection(connected_clients)
+        result_json["4"] = self.check_damage(failed_heartbeat)
+        self.docker.random_kill_containers(num_containers_to_kill=2)  # 6
+        failed_heartbeat = self.heartbeat_collection(connected_clients)
+        result_json["6"] = self.check_damage(failed_heartbeat)
+        self.docker.random_kill_containers(num_containers_to_kill=2)  # 8
+        failed_heartbeat = self.heartbeat_collection(connected_clients)
+        result_json["8"] = self.check_damage(failed_heartbeat)
+        self.docker.random_kill_containers(num_containers_to_kill=2)  # 10
+        failed_heartbeat = self.heartbeat_collection(connected_clients)
+        result_json["10"] = self.check_damage(failed_heartbeat)
+        logging.critical(result_json)
         with open('result.json', 'w') as file:
-            file.write(measurement_json.__str__())
+            file.write(result_json.__str__())
+        self.cleanup(socket_list, file_dir_name)
 
 
 class SysArgument(object):
@@ -185,4 +229,4 @@ class SysArgument(object):
 if __name__ == "__main__":
     arguments = vars(SysArgument.parse_arguments())
     server_obj = Server(**arguments)
-    server_obj.task1_single_process()
+    server_obj.task2_single_process()

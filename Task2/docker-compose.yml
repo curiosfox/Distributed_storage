@@ -274,6 +274,102 @@ services:
     - ./requirements.txt:/requirements.txt
     - ./FileDistribution.py:/FileDistribution.py
     - ./FileOperations.py:/FileOperations.py
+  client_node_24:
+    command: sh -c 'pip3 install -r requirements.txt && python3 client.py'
+    depends_on:
+    - network_switch
+    environment:
+      PORT: '5579'
+    image: python:3.8-alpine
+    networks: !!set
+      mynet: null
+    ports:
+    - 5579:5579
+    volumes:
+    - ./client.py:/client.py
+    - ./requirements.txt:/requirements.txt
+    - ./FileDistribution.py:/FileDistribution.py
+    - ./FileOperations.py:/FileOperations.py
+  client_node_25:
+    command: sh -c 'pip3 install -r requirements.txt && python3 client.py'
+    depends_on:
+    - network_switch
+    environment:
+      PORT: '5580'
+    image: python:3.8-alpine
+    networks: !!set
+      mynet: null
+    ports:
+    - 5580:5580
+    volumes:
+    - ./client.py:/client.py
+    - ./requirements.txt:/requirements.txt
+    - ./FileDistribution.py:/FileDistribution.py
+    - ./FileOperations.py:/FileOperations.py
+  client_node_26:
+    command: sh -c 'pip3 install -r requirements.txt && python3 client.py'
+    depends_on:
+    - network_switch
+    environment:
+      PORT: '5581'
+    image: python:3.8-alpine
+    networks: !!set
+      mynet: null
+    ports:
+    - 5581:5581
+    volumes:
+    - ./client.py:/client.py
+    - ./requirements.txt:/requirements.txt
+    - ./FileDistribution.py:/FileDistribution.py
+    - ./FileOperations.py:/FileOperations.py
+  client_node_27:
+    command: sh -c 'pip3 install -r requirements.txt && python3 client.py'
+    depends_on:
+    - network_switch
+    environment:
+      PORT: '5582'
+    image: python:3.8-alpine
+    networks: !!set
+      mynet: null
+    ports:
+    - 5582:5582
+    volumes:
+    - ./client.py:/client.py
+    - ./requirements.txt:/requirements.txt
+    - ./FileDistribution.py:/FileDistribution.py
+    - ./FileOperations.py:/FileOperations.py
+  client_node_28:
+    command: sh -c 'pip3 install -r requirements.txt && python3 client.py'
+    depends_on:
+    - network_switch
+    environment:
+      PORT: '5583'
+    image: python:3.8-alpine
+    networks: !!set
+      mynet: null
+    ports:
+    - 5583:5583
+    volumes:
+    - ./client.py:/client.py
+    - ./requirements.txt:/requirements.txt
+    - ./FileDistribution.py:/FileDistribution.py
+    - ./FileOperations.py:/FileOperations.py
+  client_node_29:
+    command: sh -c 'pip3 install -r requirements.txt && python3 client.py'
+    depends_on:
+    - network_switch
+    environment:
+      PORT: '5584'
+    image: python:3.8-alpine
+    networks: !!set
+      mynet: null
+    ports:
+    - 5584:5584
+    volumes:
+    - ./client.py:/client.py
+    - ./requirements.txt:/requirements.txt
+    - ./FileDistribution.py:/FileDistribution.py
+    - ./FileOperations.py:/FileOperations.py
   client_node_3:
     command: sh -c 'pip3 install -r requirements.txt && python3 client.py'
     depends_on:
@@ -285,6 +381,102 @@ services:
       mynet: null
     ports:
     - 5558:5558
+    volumes:
+    - ./client.py:/client.py
+    - ./requirements.txt:/requirements.txt
+    - ./FileDistribution.py:/FileDistribution.py
+    - ./FileOperations.py:/FileOperations.py
+  client_node_30:
+    command: sh -c 'pip3 install -r requirements.txt && python3 client.py'
+    depends_on:
+    - network_switch
+    environment:
+      PORT: '5585'
+    image: python:3.8-alpine
+    networks: !!set
+      mynet: null
+    ports:
+    - 5585:5585
+    volumes:
+    - ./client.py:/client.py
+    - ./requirements.txt:/requirements.txt
+    - ./FileDistribution.py:/FileDistribution.py
+    - ./FileOperations.py:/FileOperations.py
+  client_node_31:
+    command: sh -c 'pip3 install -r requirements.txt && python3 client.py'
+    depends_on:
+    - network_switch
+    environment:
+      PORT: '5586'
+    image: python:3.8-alpine
+    networks: !!set
+      mynet: null
+    ports:
+    - 5586:5586
+    volumes:
+    - ./client.py:/client.py
+    - ./requirements.txt:/requirements.txt
+    - ./FileDistribution.py:/FileDistribution.py
+    - ./FileOperations.py:/FileOperations.py
+  client_node_32:
+    command: sh -c 'pip3 install -r requirements.txt && python3 client.py'
+    depends_on:
+    - network_switch
+    environment:
+      PORT: '5587'
+    image: python:3.8-alpine
+    networks: !!set
+      mynet: null
+    ports:
+    - 5587:5587
+    volumes:
+    - ./client.py:/client.py
+    - ./requirements.txt:/requirements.txt
+    - ./FileDistribution.py:/FileDistribution.py
+    - ./FileOperations.py:/FileOperations.py
+  client_node_33:
+    command: sh -c 'pip3 install -r requirements.txt && python3 client.py'
+    depends_on:
+    - network_switch
+    environment:
+      PORT: '5588'
+    image: python:3.8-alpine
+    networks: !!set
+      mynet: null
+    ports:
+    - 5588:5588
+    volumes:
+    - ./client.py:/client.py
+    - ./requirements.txt:/requirements.txt
+    - ./FileDistribution.py:/FileDistribution.py
+    - ./FileOperations.py:/FileOperations.py
+  client_node_34:
+    command: sh -c 'pip3 install -r requirements.txt && python3 client.py'
+    depends_on:
+    - network_switch
+    environment:
+      PORT: '5589'
+    image: python:3.8-alpine
+    networks: !!set
+      mynet: null
+    ports:
+    - 5589:5589
+    volumes:
+    - ./client.py:/client.py
+    - ./requirements.txt:/requirements.txt
+    - ./FileDistribution.py:/FileDistribution.py
+    - ./FileOperations.py:/FileOperations.py
+  client_node_35:
+    command: sh -c 'pip3 install -r requirements.txt && python3 client.py'
+    depends_on:
+    - network_switch
+    environment:
+      PORT: '5590'
+    image: python:3.8-alpine
+    networks: !!set
+      mynet: null
+    ports:
+    - 5590:5590
     volumes:
     - ./client.py:/client.py
     - ./requirements.txt:/requirements.txt

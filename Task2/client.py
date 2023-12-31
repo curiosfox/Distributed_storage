@@ -58,7 +58,7 @@ class Client(object):
                     socket.send_json(send_json)
                 else:
                     send_json = {
-                        "data": f"Operation Unknown"
+                        "data": f"Operation Heartbeat"
                     }
                     socket.send_json(send_json)
 
