@@ -6,7 +6,7 @@ import string
 class FileOps:
     def __init__(self, file_size):
         self.file_size = file_size
-        self.file_content = self.generate_file_content()
+        self.file_content = ""
 
     def generate_file_content(self):
         return ''.join(random.choice(string.ascii_letters) for _ in range(self.file_size))

@@ -4,7 +4,7 @@ import sys
 
 from flask import Flask, app, request
 
-from Distributed_storage.Task1.server import Server
+from server import Server
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -18,8 +18,10 @@ def hello():
 @app.route('/task1', methods=["POST"])
 def task1():
     params_json = request.get_json()
+    print(f"Nodes:{params_json.get('nodes')}_Operation:{params_json.get('operation')}_filesize_{params_json.get('file_size')}_repeat{params_json.get("repeat")}")
+
     server_obj = Server(nodes=params_json.get('nodes', 4), operation=params_json.get('operation', 'random'),
-                        file_size=params_json.get('file_size', 100 * 1024), repeat=params_json.get("repeat", 100))
+                        file_size=params_json.get('file_size', 100 * 1024), repeat=params_json.get("repeat",100))
     server_obj.task1_single_process()
     with open('result.json') as file:
         return file.read()

@@ -22,7 +22,7 @@ class Server(object):
         self.throttle_bandwidth = 5000 if kwargs.get('throttle') is None else kwargs.get('throttle')
         self.fragments = 4 if kwargs.get('fragments') is None else kwargs.get('fragments')
         self.operation = "random" if kwargs.get('operation') is None else kwargs.get('operation')
-        self.repeat = 1 if kwargs.get('repeat') is None else kwargs.get('repeat')
+        self.repeat = 100 if kwargs.get('repeat') is None else kwargs.get('repeat') # change it to 100
         logging.basicConfig(level=logging.DEBUG)
 
     def start_server(self):
